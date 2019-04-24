@@ -1,29 +1,32 @@
 import os, sys
 import pygame
 from tornado.web import RequestHandler
+from tornado import gen
 from app import BaseHandler
+from parser import auth_parse
+from DAO.postDAO import PostDAO
 from PIL import Image
 from io import StringIO, BytesIO
-import json
 
 
 class PostHandler(BaseHandler):
 
+    @gen.coroutine
     def post(self):
-        #        data = self.get_argument('kek')
-        #         photo = self.get_argument('photo')
-        file_body = self.request.files['photo'][0]['body']
-        img = Image.open(BytesIO(file_body))
-        path = "/home/paul/PycharmProjects/diplom/backend/images"
-        img.save(os.path.join(path, "img"), img.format)
-        self.write({'message': 'ok'})
+        list = auth_parse(self)
+        postDAO = PostDAO(self.db)
+        isExists = yield postDAO.get_auth(list)
+        if isExists is not None:    # if header not contain basicAuth => return forbidden 403 else:
+            author = self.get_argument("author")
+            caption = self.get_argument("caption")
+            data = self.get_argument("data")
+            new_post = [author, caption, data]  #TODO если вместе с картинкой добавлять и получится долгое тегирование
+                                                #то вернуть ответ 200 Ok и тегировать картинку и добавить в базу затем
 
-    def get(self):
-        img_name = os.path.join("/home/paul/PycharmProjects/diplom/backend/images", "img")
-        img = Image.open(img_name)
-        imgByteArr = BytesIO()
-        img.save(imgByteArr, img.format)
-        imgByteArr = imgByteArr.getvalue()
-        self.write(imgByteArr)
-        self.set_header("Content-type", "image/" + img.format)
+            cursor = yield postDAO.load_post(new_post)
+            if not (cursor.closed):
+                cursor.close()
+            self.write('added')
+
+
 
