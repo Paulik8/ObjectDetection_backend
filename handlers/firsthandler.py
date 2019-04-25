@@ -1,7 +1,7 @@
 from tornado.web import RequestHandler, Application
 from entities.post import Post
 from handlers.post_handler import PostHandler
-from header_parser import parse
+from parser import auth_parse
 from tornado import gen
 from app import BaseHandler
 import psycopg2
@@ -15,7 +15,7 @@ class FirstHandler(BaseHandler):
         sql = """
             CREATE TABLE IF NOT EXISTS users(
             id SERIAL NOT NULL PRIMARY KEY,
-            nickname citext,
+            nickname citext UNIQUE,
             password citext,
             age INTEGER
             );

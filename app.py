@@ -13,15 +13,15 @@ class BaseHandler(web.RequestHandler):
         return self.application.db
 
 
-from handlers import select_handler as s
+from handlers import image_handler as i
 from handlers import auth_handler as ah
 
 class Application(web.Application):
     def __init__(self):
-        urls = [("/", f.FirstHandler),
-                ("/post", p.PostHandler),
-                ("/select", s.SelectHandler),
-                ("/auth", ah.AuthHandler)
+        urls = [(r"/", f.FirstHandler),
+                (r"/post", p.PostHandler),
+                (r"/image", i.ImageHandler),
+                (r"/auth", ah.AuthHandler)
                 ]
         web.Application.__init__(self, urls)
         self.ioloop = IOLoop.instance()

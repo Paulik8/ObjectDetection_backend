@@ -1,6 +1,6 @@
 from app import BaseHandler
 from tornado import gen
-from header_parser import parse
+from parser import auth_parse
 import base64
 from DAO.userDAO import UserDAO
 
@@ -8,16 +8,12 @@ from DAO.userDAO import UserDAO
 class AuthHandler(BaseHandler):
     @gen.coroutine
     def post(self):
-        list = []
-        header = parse(self.request.headers.get('Authorization'))
-        age = self.get_argument('age')
-        data = base64.b64decode(header)
-        data_str = str(data)[2:-1].split(':')
-        nickname = data_str[0]
-        password = data_str[1]
-        list = [nickname, password, age]
+
+        list = auth_parse(self)
 
         userDAO = UserDAO(self.db)
         cursor = yield (userDAO.auth(list))
+        if not cursor.closed:
+            cursor.close()
 
         print(list)

@@ -7,16 +7,7 @@ from io import StringIO, BytesIO
 import json
 
 
-class PostHandler(BaseHandler):
-
-    def post(self):
-        #        data = self.get_argument('kek')
-        #         photo = self.get_argument('photo')
-        file_body = self.request.files['photo'][0]['body']
-        img = Image.open(BytesIO(file_body))
-        path = "/home/paul/PycharmProjects/diplom/backend/images"
-        img.save(os.path.join(path, "img"), img.format)
-        self.write({'message': 'ok'})
+class ListPostHandler(BaseHandler):
 
     def get(self):
         img_name = os.path.join("/home/paul/PycharmProjects/diplom/backend/images", "img")
@@ -27,3 +18,11 @@ class PostHandler(BaseHandler):
         self.write(imgByteArr)
         self.set_header("Content-type", "image/" + img.format)
 
+    # def post(self):
+    #     #        data = self.get_argument('kek')
+    #     #         photo = self.get_argument('photo')
+    #     file_body = self.request.files['photo'][0]['body']
+    #     img = Image.open(BytesIO(file_body))
+    #     path = "/home/paul/PycharmProjects/diplom/backend/images"
+    #     img.save(os.path.join(path, "img"), img.format)
+    #     self.write({'message': 'ok'})
