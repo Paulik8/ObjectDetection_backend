@@ -24,6 +24,11 @@ class PostHandler(BaseHandler):
         postDAO = PostDAO(self.db)
         id_user = yield postDAO.get_auth(list)
 
+        if id_user is None:
+            self.set_status(403)
+            self.finish()
+            return
+
         if id_user is not None:
             # if header not contain basicAuth => return forbidden 403 else:
 
@@ -41,7 +46,7 @@ class PostHandler(BaseHandler):
             if isLoaded is None:
                 id_image_arr = yield imageDAO.load_image(hash_image)
                 id_image = id_image_arr[0]
-                img.save(os.path.join(path, str(id_image[0])), img.format)
+                img.save(os.path.join(path, str(id_image)), img.format)
 
             caption = self.get_argument("caption")
             data = self.get_argument("data")

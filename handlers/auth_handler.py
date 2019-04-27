@@ -9,7 +9,7 @@ class AuthHandler(BaseHandler):
     @gen.coroutine
     def post(self):
 
-        list = auth_parse(self)
+        list = yield auth_parse(self)
 
         userDAO = UserDAO(self.db)
         cursor = yield (userDAO.auth(list))

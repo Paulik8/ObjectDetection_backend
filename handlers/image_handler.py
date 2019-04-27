@@ -15,6 +15,7 @@ class ImageHandler(BaseHandler):
         imgByteArr = BytesIO()
         img.save(imgByteArr, img.format)
         imgByteArr = imgByteArr.getvalue()
+        self.set_status(200)
         self.write(imgByteArr)
         self.set_header("Content-type", "image/" + img.format)
 

@@ -20,6 +20,7 @@ class ListPostHandler(BaseHandler):
         result = yield postDAO.get_posts(page_int)
         json_res = yield self.resp_json(result)
 
+        self.set_status(200)
         self.write(json.dumps(json_res, default=ListPostHandler.myconverter))
 
     @gen.coroutine
