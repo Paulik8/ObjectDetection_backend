@@ -16,9 +16,14 @@ class PostHandler(BaseHandler):
 
     @gen.coroutine
     def post(self):
-        list = common_parse(self)
+        list = yield common_parse(self)
+        if list is None:
+            self.set_status(403)
+            self.finish()
+            return
         postDAO = PostDAO(self.db)
         id_user = yield postDAO.get_auth(list)
+
         if id_user is not None:
             # if header not contain basicAuth => return forbidden 403 else:
 
@@ -28,7 +33,7 @@ class PostHandler(BaseHandler):
             #img.save(os.path.join(path, img), img.format)
             bs64 = base64.b64encode(file_body)
             hash_image = str(hashlib.md5(file_body).hexdigest())
-
+            id_image = 1
             imageDAO = ImageDAO(self.db)
             isLoaded = yield imageDAO.get_duplicate_hash(hash_image)
             if isLoaded is not None:
@@ -47,7 +52,7 @@ class PostHandler(BaseHandler):
             cursor = yield postDAO.load_post(new_post)
             if not (cursor.closed):
                 cursor.close()
-            self.write('added')
+            self.set_status(200)
 
 
 
