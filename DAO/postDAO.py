@@ -22,7 +22,7 @@ class PostDAO:
             INSERT INTO posts (author, caption, data, image, tags) 
             VALUES (%s, %s, %s, %s, %s)
         """
-        cursor = yield self.db.execute(sql, (arr[0], arr[1], arr[2], 123, "kek"))
+        cursor = yield self.db.execute(sql, (arr[0], arr[1], arr[2], arr[3], "kek"))
         return cursor
 
     @gen.coroutine
@@ -52,6 +52,7 @@ class PostDAO:
             caption CITEXT,
             data TIMESTAMP,
             tags CITEXT,
-            FOREIGN KEY (author) REFERENCES "users" (id)
+            FOREIGN KEY (author) REFERENCES "users" (id),
+            FOREIGN KEY (image) REFERENCES "images" (id)
             );
         """

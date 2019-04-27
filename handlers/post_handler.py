@@ -30,21 +30,24 @@ class PostHandler(BaseHandler):
             hash_image = str(hashlib.md5(file_body).hexdigest())
 
             imageDAO = ImageDAO(self.db)
-            isLoaded = yield imageDAO.load_image(hash_image)
+            isLoaded = yield imageDAO.get_duplicate_hash(hash_image)
             if isLoaded is not None:
-                id_image = yield imageDAO.get_id(hash_image)
-                img.save(os.path.join(path, id_image), img.format)
+                id_image = isLoaded[0]
+            if isLoaded is None:
+                id_image_arr = yield imageDAO.load_image(hash_image)
+                id_image = id_image_arr[0]
+                img.save(os.path.join(path, str(id_image[0])), img.format)
 
-                caption = self.get_argument("caption")
-                data = self.get_argument("data")
-                new_post = [id_user[0], caption, data]  #TODO если вместе с картинкой добавлять и получится долгое тегирование
-                                                    #то вернуть ответ 200 Ok и тегировать картинку и добавить в базу затем
+            caption = self.get_argument("caption")
+            data = self.get_argument("data")
+            new_post = [id_user[0], caption, data, id_image]  #TODO если вместе с картинкой добавлять и получится долгое тегирование
+                                                #то вернуть ответ 200 Ok и тегировать картинку и добавить в базу затем
 
 
-                cursor = yield postDAO.load_post(new_post)
-                if not (cursor.closed):
-                    cursor.close()
-                self.write('added')
+            cursor = yield postDAO.load_post(new_post)
+            if not (cursor.closed):
+                cursor.close()
+            self.write('added')
 
 
 
