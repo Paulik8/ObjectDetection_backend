@@ -1,5 +1,5 @@
 from handlers import firsthandler as f
-from handlers import post_handler as p
+from handlers import post_handler as ph
 
 from tornado.ioloop import IOLoop
 from tornado.httpserver import HTTPServer
@@ -13,14 +13,16 @@ class BaseHandler(web.RequestHandler):
         return self.application.db
 
 
-from handlers import image_handler as i
+from handlers import image_handler as ih
 from handlers import auth_handler as ah
+from handlers import list_post_handler as lph
 
 class Application(web.Application):
     def __init__(self):
         urls = [(r"/", f.FirstHandler),
-                (r"/post", p.PostHandler),
-                (r"/image", i.ImageHandler),
+                (r"/post", ph.PostHandler),
+                (r"/image", ih.ImageHandler),
+                (r"/posts", lph.ListPostHandler),
                 (r"/auth", ah.AuthHandler)
                 ]
         web.Application.__init__(self, urls)
