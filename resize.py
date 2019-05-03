@@ -19,9 +19,9 @@ def resize(file):
     # set the resizing factor so the aspect ratio can be retained
     # factor > 1.0 increases size
     # factor < 1.0 decreases size
-    factor = 0.25
-    width = int(width_org * factor)
-    height = int(height_org * factor)
+    factor = 0.5
+    width = 384
+    height = 512
     # best down-sizing filter
     img_anti = img_org.resize((width, height), Image.ANTIALIAS)
     # split image filename into name and extension
@@ -29,4 +29,7 @@ def resize(file):
     # create a new file name for saving the result
     new_image_file = "%s%s%s" % (name, str(factor), ext)
     # img_anti.save("./images0.5/" + file)
-    img_anti.save(os.path.join(saving_file, name), img_org.format)
+    img_anti.save(os.path.join(saving_file, "cat05.jpg"), img_org.format)
+
+
+resize("cat2.jpg")

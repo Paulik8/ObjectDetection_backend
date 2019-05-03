@@ -5,12 +5,12 @@ import hashlib
 from tornado.web import RequestHandler
 from tornado import gen
 from app import BaseHandler
-from parser import auth_parse, common_parse
+from parser import auth_parse, common_parse, tags_parse
 from DAO.postDAO import PostDAO
 from DAO.imageDAO import ImageDAO
 from PIL import Image
 from io import StringIO, BytesIO
-
+from get_tag2 import get_tag2
 
 class PostHandler(BaseHandler):
 
@@ -54,10 +54,19 @@ class PostHandler(BaseHandler):
                                                 #то вернуть ответ 200 Ok и тегировать картинку и добавить в базу затем
 
 
-            cursor = yield postDAO.load_post(new_post)
-            if not (cursor.closed):
-                cursor.close()
+            id_post = yield postDAO.load_post(new_post)
+            # if not (cursor.closed):
+            #     cursor.close()
             self.set_status(200)
+            self.finish()
+
+            tags = yield get_tag2(os.path.join(path, str(id_image)))
+            print(tags)
+
+            arr_of_tags = yield tags_parse(tags)
+            if arr_of_tags is not None:
+                cursor = postDAO.load_tag(arr_of_tags, id_post)
+
 
 
 

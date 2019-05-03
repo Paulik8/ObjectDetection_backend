@@ -8,7 +8,7 @@ from object_detection.utils import ops as utils_ops
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
 
-saving_file = "/home/paul/PycharmProjects/diplom/backend/images_s"
+saving_file = "/home/paul/PycharmProjects/diplom/backend/images"
 
 
 @gen.coroutine
@@ -85,16 +85,19 @@ def get_tag(file):
     vis_util.visualize_boxes_and_labels_on_image_array(
         image_np,
         output_dict['detection_boxes'],
-        output_dict['detection_classes'],
+        output_dict['detection_classes'].astype(np.int32),
         output_dict['detection_scores'],
         category_index,
         instance_masks=output_dict.get('detection_masks'),
         use_normalized_coordinates=True,
         line_thickness=8)
-    plt.figure(figsize=(24, 16))
+    plt.figure(figsize=(12, 8))
     plt.imshow(image_np)
-    plt.savefig('demo2.png', bbox_inches='tight')
-    print(output_dict['detection_classes'])
+    plt.savefig('demo2.jpg', bbox_inches='tight')
+
+    print([category_index.get(value)
+           for index, value in enumerate(output_dict['detection_classes'][0]) if output_dict['detection_scores'][0][0, index] > 0.5])
+    # print(output_dict['detection_classes'])
 
 
-get_tag("2.png")
+get_tag("cat2.jpg")

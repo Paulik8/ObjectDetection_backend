@@ -17,13 +17,20 @@ class PostDAO:
 
 
     @gen.coroutine
+    def load_tag(self, arr, id):
+        sql = """
+            UPDATE posts SET tags = %s WHERE id = %s
+        """
+        cursor  = yield self.db.execute()
+
+    @gen.coroutine
     def load_post(self, arr):
         sql = """
             INSERT INTO posts (author, caption, data, image, tags) 
-            VALUES (%s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s) RETURNING id
         """
         cursor = yield self.db.execute(sql, (arr[0], arr[1], arr[2], arr[3], "kek"))
-        return cursor
+        return cursor.fetchone()
 
     @gen.coroutine
     def get_posts(self, page):
@@ -56,3 +63,22 @@ class PostDAO:
             FOREIGN KEY (image) REFERENCES "images" (id)
             );
         """
+
+    def create_table_posts_tags(self):
+        sql = """
+            CREATE TABLE IF NOT EXISTS posts_tags(
+            id_post INTEGER,
+            id_tag INTEGER,
+            FOREIGN KEY (id_post) REFERENCES "posts" (id),
+            FOREIGN KEY (id_tag) REFERENCES "tags" (id)
+            );
+        """
+
+    def create_table_tags(self):
+        sql = """
+            CREATE TABLE IF NOT EXISTS tags(
+            id SERIAL NOT NULL PRIMARY KEY,
+            name citext
+            );
+        """
+
