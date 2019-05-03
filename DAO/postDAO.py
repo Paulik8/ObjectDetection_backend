@@ -8,6 +8,17 @@ class PostDAO:
 
 
     @gen.coroutine
+    def get_post(self, id_tag):
+        sql = """
+            SELECT * FROM posts 
+            JOIN images_posts_tags ipt ON posts.id = ipt.id_post
+            WHERE id_tag = %s
+        """
+        cursor = yield self.db.execute(sql, (id_tag))
+        return cursor.fetchall()
+
+
+    @gen.coroutine
     def get_id(self, nick):
         sql = """
             SELECT id FROM users WHERE nickname = %s
@@ -15,13 +26,6 @@ class PostDAO:
         cursor = yield self.db.execute(sql, nick)
         return cursor.fetchone()
 
-
-    @gen.coroutine
-    def load_tag(self, arr, id):
-        sql = """
-            UPDATE posts SET tags = %s WHERE id = %s
-        """
-        cursor  = yield self.db.execute()
 
     @gen.coroutine
     def load_post(self, arr):
@@ -35,9 +39,9 @@ class PostDAO:
     @gen.coroutine
     def get_posts(self, page):
         limit_1 = (page - 1) * 5
-        limit_2 = 5 #5 записей на страницу
+        limit_2 = 5  # 5 записей на страницу
         sql = """
-            SELECT nickname, age, image, caption, data FROM posts JOIN users ON author = users.id ORDER BY data DESC OFFSET %s LIMIT %s
+            SELECT nickname, age, image, caption, data FROM posts JOIN users ON author = users.id ORDER BY data DESC OFFSET %S LIMIT %S
         """
         cursor = yield self.db.execute(sql, (limit_1, limit_2))
         return cursor.fetchall()
@@ -64,11 +68,13 @@ class PostDAO:
             );
         """
 
-    def create_table_posts_tags(self):
+    def create_table_images_posts_tags(self):
         sql = """
-            CREATE TABLE IF NOT EXISTS posts_tags(
+            CREATE TABLE IF NOT EXISTS images_posts_tags(
+            id_image INTEGER,
             id_post INTEGER,
             id_tag INTEGER,
+            FOREIGN KEY (id_image) REFERENCES "images" (id),
             FOREIGN KEY (id_post) REFERENCES "posts" (id),
             FOREIGN KEY (id_tag) REFERENCES "tags" (id)
             );
@@ -78,7 +84,11 @@ class PostDAO:
         sql = """
             CREATE TABLE IF NOT EXISTS tags(
             id SERIAL NOT NULL PRIMARY KEY,
-            name citext
+            name CITEXT
             );
         """
 
+    def create_fields_tags(self):
+        sql = """
+            INSERT INTO tags (name) VALUES ('cat cats'),('dog dogs');
+        """

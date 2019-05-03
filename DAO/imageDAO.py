@@ -6,6 +6,31 @@ class ImageDAO:
     def __init__(self, db):
         self.db = db
 
+    @gen.coroutine
+    def get_tag(self, id_image):
+        sql = """
+            SELECT DISTINCT id_tag FROM images_posts_tags WHERE id_image = %s
+        """
+        cursor = yield self.db.execute(sql, (id_image,))
+        return cursor.fetchall()
+
+    @gen.coroutine
+    def load_tags(self, arr, id_post, id_image):
+        sql = """
+            INSERT INTO images_posts_tags (id_image, id_post, id_tag)
+            VALUES (%s, %s, %s),(%s, %s, %s)
+        """
+        cursor = yield self.db.execute(sql, (id_image, id_post, arr[0], id_image, id_post, arr[1]))
+        return cursor
+
+    @gen.coroutine
+    def load_tag(self, arr, id_post, id_image):
+        sql = """
+            INSERT INTO images_posts_tags (id_image, id_post, id_tag)
+            VALUES (%s, %s, %s)
+        """
+        cursor = yield self.db.execute(sql, (id_image, id_post, arr[0]))
+
 
     @gen.coroutine
     def get_id(self, hash):

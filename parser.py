@@ -40,7 +40,7 @@ def header_parse(str):
 def tags_parse(arr):
     valid_arr = [0, 0]
     res_arr = []
-    if arr.len() > 0:
+    if len(arr) > 0:
         for el_dict in arr:
             el = el_dict['id']
             if valid_arr[el - 1] == 0:
@@ -48,9 +48,9 @@ def tags_parse(arr):
 
         for index, res_el in enumerate(valid_arr):
             if index == 0 and res_el == 1:
-                res_arr.extend(['cat', 'cats'])
+                res_arr.append(1)
             if index == 1 and res_el == 1:
-                res_arr.extend(['dog', 'dogs'])
+                res_arr.append(2)
     return res_arr
 
 # res = get_tag2('dog.jpg')

@@ -12,6 +12,7 @@ from PIL import Image
 from io import StringIO, BytesIO
 from get_tag2 import get_tag2
 
+
 class PostHandler(BaseHandler):
 
     @gen.coroutine
@@ -35,7 +36,7 @@ class PostHandler(BaseHandler):
             file_body = self.request.files['photo'][0]['body']
             img = Image.open(BytesIO(file_body))
             path = "/home/paul/PycharmProjects/diplom/backend/images"
-            #img.save(os.path.join(path, img), img.format)
+            # img.save(os.path.join(path, img), img.format)
             bs64 = base64.b64encode(file_body)
             hash_image = str(hashlib.md5(file_body).hexdigest())
             id_image = 1
@@ -50,23 +51,30 @@ class PostHandler(BaseHandler):
 
             caption = self.get_argument("caption")
             data = self.get_argument("data")
-            new_post = [id_user[0], caption, data, id_image]  #TODO если вместе с картинкой добавлять и получится долгое тегирование
-                                                #то вернуть ответ 200 Ok и тегировать картинку и добавить в базу затем
+            new_post = [id_user[0], caption, data,
+                        id_image]  # TODO если вместе с картинкой добавлять и получится долгое тегирование
+            # то вернуть ответ 200 Ok и тегировать картинку и добавить в базу затем
 
-
-            id_post = yield postDAO.load_post(new_post)
+            res_post = yield postDAO.load_post(new_post)
+            id_post = res_post[0]
             # if not (cursor.closed):
             #     cursor.close()
             self.set_status(200)
             self.finish()
 
-            tags = yield get_tag2(os.path.join(path, str(id_image)))
-            print(tags)
+            arr_of_tags = []
 
-            arr_of_tags = yield tags_parse(tags)
+            if isLoaded is not None:
+                res = yield imageDAO.get_tag(id_image)
+                for i in res:
+                    arr_of_tags.append(i[0])
+            if isLoaded is None:
+                tags = yield get_tag2(os.path.join(path, str(id_image)))
+                print(tags)
+                arr_of_tags = yield tags_parse(tags)
+
             if arr_of_tags is not None:
-                cursor = postDAO.load_tag(arr_of_tags, id_post)
-
-
-
-
+                if len(arr_of_tags) > 1:
+                    cursor = yield imageDAO.load_tags(arr_of_tags, id_post, id_image)
+                if len(arr_of_tags) == 1:
+                    cursor = yield imageDAO.load_tag(arr_of_tags, id_post, id_image)
