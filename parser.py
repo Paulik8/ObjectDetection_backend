@@ -10,11 +10,13 @@ def auth_parse(req):
         return
     age = req.get_argument('age')
     data = base64.b64decode(header)
+    # size = len(find(str(data), '=').result())
     data_str = str(data)[2:-1].split(':')
     nickname = data_str[0]
     password = data_str[1]
     list = [nickname, password, age]
     return list
+
 
 @gen.coroutine
 def common_parse(req):
@@ -22,6 +24,7 @@ def common_parse(req):
     if header is None:
         return
     data = base64.b64decode(header)
+    # size = len(find(str(data), '=').result())
     data_str = str(data)[2:-1].split(':')
     nickname = data_str[0]
     password = data_str[1]
@@ -30,11 +33,21 @@ def common_parse(req):
 
 
 @gen.coroutine
+def find(str, ch):
+    app = []
+    for i, ltr in enumerate(str):
+        if ltr == ch:
+            app.append(i)
+    return app
+
+
+@gen.coroutine
 def header_parse(str):
     if str is None:
         return
     code = str.split(' ')[1]
     return code
+
 
 @gen.coroutine
 def tags_parse(arr):
@@ -53,5 +66,10 @@ def tags_parse(arr):
                 res_arr.append(2)
     return res_arr
 
+
 # res = get_tag2('17.jpg')
 # print (res)
+# data = base64.b64decode('dXM6dXM=')
+# size = len(find('dXM6dXM=', '=').result())
+# data_str = str(data)[size:-1].split(':')
+# print(data_str)

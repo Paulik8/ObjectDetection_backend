@@ -15,5 +15,8 @@ class AuthHandler(BaseHandler):
         cursor = yield (userDAO.auth(list))
         if not cursor.closed:
             cursor.close()
+        self.set_status(200)
+        self.write({'response': 200})
+        self.finish()
 
         print(list)
