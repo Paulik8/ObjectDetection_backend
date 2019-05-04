@@ -53,5 +53,5 @@ def tags_parse(arr):
                 res_arr.append(2)
     return res_arr
 
-# res = get_tag2('dog.jpg')
+# res = get_tag2('17.jpg')
 # print (res)

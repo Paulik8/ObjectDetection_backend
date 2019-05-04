@@ -41,7 +41,7 @@ class PostDAO:
         limit_1 = (page - 1) * 5
         limit_2 = 5  # 5 записей на страницу
         sql = """
-            SELECT nickname, age, image, caption, data FROM posts JOIN users ON author = users.id ORDER BY data DESC OFFSET %S LIMIT %S
+            SELECT nickname, age, image, caption, data FROM posts JOIN users ON author = users.id ORDER BY data DESC OFFSET %s LIMIT %s
         """
         cursor = yield self.db.execute(sql, (limit_1, limit_2))
         return cursor.fetchall()
