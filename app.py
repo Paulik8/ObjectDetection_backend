@@ -21,7 +21,7 @@ class Application(web.Application):
     def __init__(self):
         urls = [(r"/", f.FirstHandler),
                 (r"/post", ph.PostHandler),
-                (r"/image", ih.ImageHandler),
+                (r"/image/([^/]+)", ih.ImageHandler),
                 (r"/posts", lph.ListPostHandler),
                 (r"/auth", ah.AuthHandler)
                 ]

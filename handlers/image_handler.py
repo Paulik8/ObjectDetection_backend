@@ -8,8 +8,8 @@ from app import BaseHandler
 class ImageHandler(BaseHandler):
 
     @gen.coroutine
-    def get(self):
-        id = self.request.arguments.get('id')[0].decode("utf-8")
+    def get(self, id):
+        # id = self.request.arguments.get('id')[0].decode("utf-8")
         img_name = os.path.join("/home/paul/PycharmProjects/diplom/backend/images", id)
         img = Image.open(img_name)
         imgByteArr = BytesIO()
