@@ -16,6 +16,7 @@ class BaseHandler(web.RequestHandler):
 from handlers import image_handler as ih
 from handlers import auth_handler as ah
 from handlers import list_post_handler as lph
+from handlers import search_handler as sh
 
 class Application(web.Application):
     def __init__(self):
@@ -23,7 +24,8 @@ class Application(web.Application):
                 (r"/post", ph.PostHandler),
                 (r"/image/([^/]+)", ih.ImageHandler),
                 (r"/posts", lph.ListPostHandler),
-                (r"/auth", ah.AuthHandler)
+                (r"/auth", ah.AuthHandler),
+                (r"/search/([^/]+)", sh.SearchHandler)
                 ]
         web.Application.__init__(self, urls)
         self.ioloop = IOLoop.instance()
@@ -41,5 +43,5 @@ if __name__ == "__main__":
     # future.result()  # raises exception on connection error
 
     http_server = HTTPServer(app)
-    http_server.listen(3000, '192.168.1.36')
+    http_server.listen(3000, '192.168.1.65')
     app.ioloop.start()

@@ -17,6 +17,18 @@ class PostDAO:
         cursor = yield self.db.execute(sql, (id_tag))
         return cursor.fetchall()
 
+    @gen.coroutine
+    def get_posts_by_tag(self, tags):
+        sql = """
+              SELECT id_post FROM posts
+              JOIN images_posts_tags ipt ON posts.id = ipt.id_post
+              WHERE id_tag IN (%s) GROUP BY id_post HAVING count(*) > 1;
+          """
+        format_strings = ','.join(['%s'] * len(tags))
+        #cursor = yield self.db.execute('SELECT id_post FROM posts JOIN images_posts_tags ipt ON posts.id = ipt.id_post WHERE id_tag IN ({0}) GROUP BY id_post HAVING count(*) > 1'.format(','.join('?' for _ in tags)), tags)
+        cursor = yield self.db.execute(sql % format_strings, tags)
+        return cursor.fetchall()
+
 
     @gen.coroutine
     def get_id(self, nick):

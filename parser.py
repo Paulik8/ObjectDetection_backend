@@ -66,6 +66,11 @@ def tags_parse(arr):
                 res_arr.append(2)
     return res_arr
 
+# @gen.coroutine
+# def request_tags_parse(str):
+#     arr = str.split('_')
+
+
 
 # res = get_tag2('17.jpg')
 # print (res)
