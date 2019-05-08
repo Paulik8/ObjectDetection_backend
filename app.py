@@ -40,8 +40,8 @@ if __name__ == "__main__":
     app.ioloop.add_future(future, lambda f: app.ioloop.stop())
     app.ioloop.start()
     future.result()
-    # future.result()  # raises exception on connection error
 
     http_server = HTTPServer(app)
-    http_server.listen(3000, '192.168.1.65')
+    http_server.listen(3000, '192.168.1.65')    # future.result()  # raises exception on connection error
+
     app.ioloop.start()

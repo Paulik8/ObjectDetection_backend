@@ -16,8 +16,22 @@ class PostDAO:
         cursor = yield self.db.execute(sql, (id_tag))
         return cursor.fetchall()
 
+
     @gen.coroutine
-    def get_posts_by_tag(self, tags, page):
+    def get_posts_by_tag(self, tag, page):
+        limit_1 = (page - 1) * 5
+        limit_2 = 5
+        sql = """
+            SELECT nickname, age, image, caption, data FROM posts
+            JOIN users ON posts.author = users.id
+            JOIN images_posts_tags ipt ON posts.id = ipt.id_post
+            where id_tag = %s ORDER BY data DESC OFFSET %s LIMIT %s
+        """
+        cursor = yield self.db.execute(sql, (tag, limit_1, limit_2))
+        return cursor.fetchall()
+
+    @gen.coroutine
+    def get_posts_by_tags(self, tags, page):
         limit_1 = (page - 1) * 5
         limit_2 = 5
         sql = """
@@ -48,7 +62,7 @@ class PostDAO:
     def load_post(self, arr):
         sql = """
             INSERT INTO posts (author, caption, data, image, tags) 
-            VALUES (%S, %S, %S, %S, %S) RETURNING id
+            VALUES (%s, %s, %s, %s, %s) RETURNING id
         """
         cursor = yield self.db.execute(sql, (arr[0], arr[1], arr[2], arr[3], "kek"))
         return cursor.fetchone()
@@ -58,7 +72,7 @@ class PostDAO:
         limit_1 = (page - 1) * 5
         limit_2 = 5  # 5 записей на страницу
         sql = """
-            SELECT nickname, age, image, caption, data FROM posts JOIN users ON author = users.id ORDER BY data DESC OFFSET %S LIMIT %S
+            SELECT nickname, age, image, caption, data FROM posts JOIN users ON author = users.id ORDER BY data DESC OFFSET %s LIMIT %s
         """
         cursor = yield self.db.execute(sql, (limit_1, limit_2))
         return cursor.fetchall()

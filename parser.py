@@ -66,6 +66,33 @@ def tags_parse(arr):
                 res_arr.append(2)
     return res_arr
 
+
+@gen.coroutine
+def tag_to_id_parse(arr):
+
+    valid_arr = [0, 0]
+    res_arr = []
+
+    if '_' in arr:
+        ready_arr = arr.split('_')
+    else:
+        ready_arr = arr
+
+    for i in ready_arr:
+        if 'cat' == i or 'cats' == i:
+            valid_arr[0] = 1
+        if 'dog' == i or 'dogs' == i:
+            valid_arr[1] = 1
+
+    for index, res_el in enumerate(valid_arr):
+        if index == 0 and res_el == 1:
+            res_arr.append(1)
+        if index == 1 and res_el == 1:
+            res_arr.append(2)
+    return res_arr
+
+
+
 # @gen.coroutine
 # def request_tags_parse(str):
 #     arr = str.split('_')

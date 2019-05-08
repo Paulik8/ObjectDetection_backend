@@ -5,7 +5,7 @@ import hashlib
 from tornado.web import RequestHandler
 from tornado import gen
 from app import BaseHandler
-from parser import auth_parse, common_parse, tags_parse
+from parser import tag_to_id_parse
 from DAO.postDAO import PostDAO
 from DAO.imageDAO import ImageDAO
 from PIL import Image
@@ -22,9 +22,14 @@ class SearchHandler(BaseHandler):
     def get(self, tags):
         page = self.request.arguments.get('page')[0].decode('utf-8')
         page_int = int(page)
-        arr_tags = tags.split('_')
+
         postDAO = PostDAO(self.db)
-        result = yield postDAO.get_posts_by_tag(arr_tags, page_int)
+
+        tags_int = yield tag_to_id_parse(tags)
+        if len(tags_int) > 1:
+            result = yield postDAO.get_posts_by_tags(tags_int, page_int)
+        else:
+            result = yield postDAO.get_posts_by_tag(tags_int[0], page_int)
         json_res = yield self.resp_json(result)
 
         self.set_status(200)
