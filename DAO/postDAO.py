@@ -6,7 +6,6 @@ class PostDAO:
     def __init__(self, db):
         self.db = db
 
-
     @gen.coroutine
     def get_post(self, id_tag):
         sql = """
@@ -18,17 +17,24 @@ class PostDAO:
         return cursor.fetchall()
 
     @gen.coroutine
-    def get_posts_by_tag(self, tags):
+    def get_posts_by_tag(self, tags, page):
+        limit_1 = (page - 1) * 5
+        limit_2 = 5
         sql = """
-              SELECT id_post FROM posts
-              JOIN images_posts_tags ipt ON posts.id = ipt.id_post
-              WHERE id_tag IN (%s) GROUP BY id_post HAVING count(*) > 1;
-          """
+               SELECT nickname, age, image, caption, data FROM posts
+                      JOIN 
+                        (SELECT posts.id FROM posts
+                        JOIN images_posts_tags ipt ON posts.id = ipt.id_post
+                        WHERE id_tag IN (%s) GROUP BY posts.id HAVING count(*) > 1) AS a ON a.id = posts.id
+                      JOIN users ON posts.author = users.id
+        """
+        sql2 = """
+            ORDER BY data DESC OFFSET %s LIMIT %s
+        """
         format_strings = ','.join(['%s'] * len(tags))
-        #cursor = yield self.db.execute('SELECT id_post FROM posts JOIN images_posts_tags ipt ON posts.id = ipt.id_post WHERE id_tag IN ({0}) GROUP BY id_post HAVING count(*) > 1'.format(','.join('?' for _ in tags)), tags)
-        cursor = yield self.db.execute(sql % format_strings, tags)
+        # cursor = yield self.db.execute('SELECT id_post FROM posts JOIN images_posts_tags ipt ON posts.id = ipt.id_post WHERE id_tag IN ({0}) GROUP BY id_post HAVING count(*) > 1'.format(','.join('?' for _ in tags)), tags)
+        cursor = yield self.db.execute(sql % format_strings + sql2, (tags[0], tags[1], limit_1, limit_2))
         return cursor.fetchall()
-
 
     @gen.coroutine
     def get_id(self, nick):
@@ -38,12 +44,11 @@ class PostDAO:
         cursor = yield self.db.execute(sql, nick)
         return cursor.fetchone()
 
-
     @gen.coroutine
     def load_post(self, arr):
         sql = """
             INSERT INTO posts (author, caption, data, image, tags) 
-            VALUES (%s, %s, %s, %s, %s) RETURNING id
+            VALUES (%S, %S, %S, %S, %S) RETURNING id
         """
         cursor = yield self.db.execute(sql, (arr[0], arr[1], arr[2], arr[3], "kek"))
         return cursor.fetchone()
@@ -53,7 +58,7 @@ class PostDAO:
         limit_1 = (page - 1) * 5
         limit_2 = 5  # 5 записей на страницу
         sql = """
-            SELECT nickname, age, image, caption, data FROM posts JOIN users ON author = users.id ORDER BY data DESC OFFSET %s LIMIT %s
+            SELECT nickname, age, image, caption, data FROM posts JOIN users ON author = users.id ORDER BY data DESC OFFSET %S LIMIT %S
         """
         cursor = yield self.db.execute(sql, (limit_1, limit_2))
         return cursor.fetchall()
