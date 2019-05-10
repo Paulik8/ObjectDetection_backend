@@ -69,19 +69,21 @@ def tags_parse(arr):
 
 @gen.coroutine
 def tag_to_id_parse(arr):
-
     valid_arr = [0, 0]
     res_arr = []
 
     if '_' in arr:
         ready_arr = arr.split('_')
+        for i in ready_arr:
+            if 'cat' == i or 'cats' == i:
+                valid_arr[0] = 1
+            if 'dog' == i or 'dogs' == i:
+                valid_arr[1] = 1
     else:
         ready_arr = arr
-
-    for i in ready_arr:
-        if 'cat' == i or 'cats' == i:
+        if 'cat' == ready_arr or 'cats' == ready_arr:
             valid_arr[0] = 1
-        if 'dog' == i or 'dogs' == i:
+        if 'dog' == ready_arr or 'dogs' == ready_arr:
             valid_arr[1] = 1
 
     for index, res_el in enumerate(valid_arr):
@@ -91,12 +93,9 @@ def tag_to_id_parse(arr):
             res_arr.append(2)
     return res_arr
 
-
-
 # @gen.coroutine
 # def request_tags_parse(str):
 #     arr = str.split('_')
-
 
 
 # res = get_tag2('17.jpg')
