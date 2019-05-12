@@ -60,6 +60,7 @@ class PostHandler(BaseHandler):
             # if not (cursor.closed):
             #     cursor.close()
             self.set_status(200)
+            self.write({'response': 200})
             self.finish()
 
             arr_of_tags = []
